@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TypeWise — Grammar &amp; Typing Trainer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+  
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col selection:bg-emerald-500/30">
+
+  <!-- Top Navigation Header (Interface Heading on the Right Side for Maximum Typing Space) -->
+  <header class="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800/90 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
+    <div class="w-full px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Left: Main Navigation Tabs & Utility Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <nav aria-label="Primary Navigation" class="flex items-center gap-1 overflow-x-auto py-0.5">
+          <button id="nav-btn-trainer" data-nav-tab="trainer" type="button"
+            class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-blue-50 text-blue-600 border border-blue-200 shadow-sm">
+            Typing Workspace
+          </button>
+          <button id="nav-btn-inspector" data-nav-tab="inspector" type="button"
+            class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            Inspector &amp; Keyboard
+          </button>
+          <button id="nav-btn-analytics" data-nav-tab="analytics" type="button"
+            class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            Analytics &amp; A–Z
+          </button>
+          <button id="nav-btn-custom" data-nav-tab="custom" type="button"
+            class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            Custom Studio
+          </button>
+          <button id="nav-btn-history" data-nav-tab="history" type="button"
+            class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            History &amp; Progress
+          </button>
+        </nav>
+
+        <!-- Global Utility Controls -->
+        <div class="flex items-center gap-1.5">
+          <button id="btn-focused-drill" type="button"
+            title="Launch a targeted drill targeting your recurring grammar or punctuation mistakes"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition flex items-center gap-1.5">
+            <span>Mistake Drill</span>
+            <span id="mistake-drill-badge" class="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-bold">0</span>
+          </button>
+
+          <button id="btn-sound-toggle" type="button"
+            title="Toggle synthesized keystroke & completion sound effects"
+            class="px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500/50 transition">
+            <span id="sound-toggle-label">Sound: Off</span>
+          </button>
+
+          <button id="btn-shortcuts-help" type="button"
+            title="View keyboard shortcuts"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-sky-500/50 transition">
+            Shortcuts (?)
+          </button>
+
+          <button id="btn-theme-toggle" type="button"
+            title="Toggle Dark / Light theme"
+            class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition">
+            <span id="theme-toggle-label">Light Mode</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Interface Heading & Brand -->
+      <div class="flex items-center gap-3 ml-auto text-right">
+        <div>
+          <div class="flex items-center justify-end gap-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+              Grammar &amp; Typing Trainer
+            </span>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">TypeWise</h1>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden xl:block">
+            Simultaneous English speed, precision, punctuation, and contextual grammar mastery
+          </p>
+        </div>
+        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
+          TW
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Banner for non-blocking feedback -->
+  <div id="toast-banner" role="status" aria-live="polite"
+    class="hidden fixed bottom-5 right-5 z-50 max-w-sm px-4 py-3 rounded-xl shadow-lg border border-emerald-500/40 bg-slate-900 text-slate-100 text-xs sm:text-sm font-medium">
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 flex flex-col w-full px-3 sm:px-5 py-3 lg:py-4">
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: TYPING WORKSPACE (MODES A-J, GRAMMAR COACH, LIVE TELEMETRY)   -->
+    <!-- ===================================================================== -->
+    <section id="view-trainer" class="flex-1 flex flex-col w-full">
+
+      <!-- Responsive Full-Viewport Grid:
+           - On 1920x1080 / Desktop (lg+): 12-column full-height layout with Left Sidebar (Curriculum + Focus/Test Mode) and Right Main Workspace (Coach + Top-Right Live Stats + Expanded Single Typing Box).
+           - On Tablet (md): Main Typing Workspace on top, Curriculum & Focus/Test Mode rearranged side-by-side in 2 columns below.
+           - On Phone (<md): Live Stats + Single Typing Box prioritized at top, followed by Grammar Coach and stacked Curriculum/Controls. -->
+      <div id="trainer-responsive-grid" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3.5 lg:gap-4 items-stretch">
+
+        <!-- ================================================================= -->
+        <!-- LEFT SIDEBAR (lg:col-span-4 xl:col-span-3): CURRICULUM & SETTINGS -->
+        <!-- Rearranges to order-2 on phone/tablet so typing area is on top,   -->
+        <!-- and order-1 (left column) on desktop/monitors.                    -->
+        <!-- ================================================================= -->
+        <aside class="order-2 lg:order-1 lg:col-span-4 xl:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:flex lg:flex-col gap-3.5 lg:gap-4 h-full">
+
+          <!-- 1. Practice Curriculum Modes (A–K) on the Left Side -->
+          <div class="lg:flex-1 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 xl:p-5 shadow-sm flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs sm:text-sm font-bold tracking-wide text-slate-800 dark:text-slate-100">
+                  Practice Curriculum Modes <span class="text-sky-500 dark:text-sky-400">(A–K)</span>
+                </span>
+              </div>
+              <p id="active-mode-description" class="text-xs leading-relaxed text-sky-600 dark:text-sky-400 font-medium">
+                Real, natural English sentences teaching grammar in context.
+              </p>
+            </div>
+            <div id="mode-buttons-container" class="flex-1 grid grid-cols-2 gap-2 content-stretch items-stretch">
+              <!-- Populated dynamically from Curriculum.PRACTICE_MODES -->
+            </div>
+          </div>
+
+          <!-- 2. Focus, Level & Test Mode Controls on the Left Side -->
+          <div class="lg:flex-1 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 xl:p-5 shadow-sm flex flex-col justify-between gap-3">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <span class="text-xs sm:text-sm font-bold tracking-wide text-slate-800 dark:text-slate-100">
+                Focus &amp; Test Mode
+              </span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400">Session Controls</span>
+            </div>
+
+            <div class="flex-1 flex flex-col justify-evenly gap-3">
+              <!-- Focus & Level Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
+                <div>
+                  <label for="select-subdrill" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Focus Topic</label>
+                  <select id="select-subdrill"
+                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium px-3 py-2 text-slate-800 dark:text-slate-100">
+                    <option value="all">All Topics in Mode</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="select-difficulty" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Difficulty Level</label>
+                  <select id="select-difficulty"
+                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium px-3 py-2 text-slate-800 dark:text-slate-100">
+                    <option value="all">All Levels</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Custom Set Quick Picker (shown when Mode I is active) -->
+              <div id="custom-set-quick-wrap" class="hidden">
+                <label for="select-active-custom-set" class="block text-xs font-semibold text-sky-600 dark:text-sky-400 mb-1">Custom Set</label>
+                <select id="select-active-custom-set"
+                  class="w-full rounded-xl border border-sky-500/40 bg-sky-500/10 text-xs font-semibold px-3 py-2 text-sky-700 dark:text-sky-300">
+                </select>
+              </div>
+
+              <!-- Test Mode & Target Value -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2.5">
+                <div>
+                  <label for="select-limit-type" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Test Mode</label>
+                  <select id="select-limit-type"
+                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium px-3 py-2 text-slate-800 dark:text-slate-100">
+                    <option value="unlimited">Practice Without Limit</option>
+                    <option value="timed">Timed Test</option>
+                    <option value="words">Word Target</option>
+                    <option value="chars">Character Target</option>
+                  </select>
+                </div>
+
+                <div id="limit-preset-wrap" class="hidden">
+                  <label for="select-limit-preset" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Target</label>
+                  <div class="flex items-center gap-1.5">
+                    <select id="select-limit-preset"
+                      class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium px-3 py-2 text-slate-800 dark:text-slate-100">
+                      <option value="60">60s</option>
+                    </select>
+                    <input id="input-custom-limit" type="number" min="5" max="10000" value="60"
+                      aria-label="Custom target value"
+                      class="hidden w-20 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium px-2.5 py-2 text-slate-800 dark:text-slate-100" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Character Target Counting Rules -->
+              <div id="char-target-rules-wrap" class="hidden flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-xs">
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input id="chk-count-spaces" type="checkbox" checked class="rounded text-sky-500" />
+                  <span>Count Spaces</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input id="chk-count-punct" type="checkbox" checked class="rounded text-sky-500" />
+                  <span>Count Punctuation</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Action Toggles: No Punct / Lowercase, Matching Mode & 3s Countdown -->
+            <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+              <div class="grid grid-cols-2 gap-2">
+                <button id="btn-plain-words-toggle" type="button"
+                  title="Practice normal lowercase words without punctuation or capital letters"
+                  class="w-full px-2.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-500/50 transition text-center truncate">
+                  No Punct / Lowercase: Off
+                </button>
+
+                <button id="btn-match-mode" type="button"
+                  title="Relaxed Mode allows corrections before completion; Strict Mode requires 100% exact character match to complete."
+                  class="w-full px-2.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-sky-500/50 transition text-center truncate">
+                  Matching: Relaxed
+                </button>
+              </div>
+
+              <label class="inline-flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                <span>3-Second Pre-Start Countdown</span>
+                <input id="chk-countdown" type="checkbox" class="rounded text-sky-500" />
+              </label>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ================================================================= -->
+        <!-- RIGHT MAIN WORKSPACE (lg:col-span-8 xl:col-span-9)                -->
+        <!-- Rearranges to order-1 on phone/tablet, order-2 on desktop.        -->
+        <!-- Stretches vertically to fill 1920x1080 with zero dead space.      -->
+        <!-- ================================================================= -->
+        <div class="order-1 lg:order-2 lg:col-span-8 xl:col-span-9 flex flex-col gap-3.5 lg:gap-4 h-full">
+
+          <!-- Top Row of Main Workspace: Contextual Grammar Coach (Left on desktop, 2nd on mobile) + Live Stats Dashboard (Top-Right on desktop, 1st on mobile) -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-3.5 lg:gap-4 items-stretch">
+
+            <!-- Contextual Grammar Coach Card (xl:col-span-6, order-2 on mobile so Live Stats is #1 on small screens, xl:order-1 on desktop) -->
+            <div class="order-2 xl:order-1 xl:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 xl:p-5 shadow-sm flex flex-col justify-between gap-2.5">
+              <div class="space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30" id="grammar-focus-badge">
+                      Grammar Focus
+                    </span>
+                    <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300" id="passage-difficulty-badge">
+                      Beginner
+                    </span>
+                    <span class="text-xs font-mono-typing text-slate-500 dark:text-slate-400" id="passage-index-label">
+                      Passage 1 of 4
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <button id="btn-toggle-hint" type="button"
+                      class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500 transition">
+                      Hide Pre-Typing Hint
+                    </button>
+                    <button id="btn-why-correct" type="button"
+                      class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 transition">
+                      Why is this correct?
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Concise Grammar Note -->
+                <p id="grammar-concise-note" class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium leading-snug">
+                  Loading grammar note...
+                </p>
+              </div>
+
+              <!-- Optional Pre-Typing Hint -->
+              <div id="grammar-hint-box" class="rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 px-3.5 py-2.5 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+                <strong class="font-semibold">Hint before typing:</strong>
+                <span id="grammar-hint-text">Watch the comma after the introductory clause.</span>
+              </div>
+
+              <!-- Expandable "Why is this correct?" Panel -->
+              <div id="grammar-why-box" class="hidden rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700 p-3.5 text-xs sm:text-sm space-y-1.5">
+                <div class="font-semibold text-sky-600 dark:text-sky-400">Grammatical Rule &amp; Contextual Explanation:</div>
+                <p id="grammar-why-text" class="text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+                <div>
+                  <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Additional Examples:</div>
+                  <ul id="grammar-examples-list" class="list-disc list-inside space-y-0.5 text-xs text-slate-600 dark:text-slate-300 font-mono-typing"></ul>
+                </div>
+                <div id="grammar-alternatives-note" class="text-xs text-emerald-600 dark:text-emerald-400"></div>
+              </div>
+            </div>
+
+            <!-- Compact Circular Live-Statistics Dashboard (Top-Right Corner, xl:col-span-6, order-1 on mobile, xl:order-2 on desktop) -->
+            <div id="live-circular-stats-panel" class="order-1 xl:order-2 xl:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 xl:p-5 shadow-sm flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
+                  <span class="text-xs sm:text-sm font-bold tracking-wide text-slate-800 dark:text-slate-100">Live Stats</span>
+                </div>
+                <span id="live-stats-target-hint" class="text-xs font-mono-typing text-slate-500 dark:text-slate-400">
+                  Real-Time Telemetry
+                </span>
+              </div>
+
+              <!-- Five Circular Indicators in One Compact Row -->
+              <div class="grid grid-cols-5 gap-1.5 sm:gap-3 items-center justify-items-center py-1">
+
+                <!-- 1. WPM -->
+                <div id="circle-card-wpm" class="stat-circle-card" title="Current Net WPM (Correct Chars / 5 / Active Minutes)">
+                  <div class="stat-circle-wrap">
+                    <svg class="stat-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="stat-ring-track" cx="40" cy="40" r="33"></circle>
+                      <circle id="ring-wpm" class="stat-ring-progress ring-wpm" cx="40" cy="40" r="33" stroke-dasharray="207.35" stroke-dashoffset="207.35"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="stat-net-wpm" class="text-sm sm:text-lg font-extrabold font-mono-typing text-slate-900 dark:text-white">0</span>
+                    </div>
+                  </div>
+                  <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5">WPM</span>
+                </div>
+
+                <!-- 2. Accuracy -->
+                <div id="circle-card-accuracy" class="stat-circle-card" title="Live Keystroke Accuracy (%)">
+                  <div class="stat-circle-wrap">
+                    <svg class="stat-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="stat-ring-track" cx="40" cy="40" r="33"></circle>
+                      <circle id="ring-accuracy" class="stat-ring-progress ring-accuracy" cx="40" cy="40" r="33" stroke-dasharray="207.35" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="stat-accuracy" class="text-sm sm:text-lg font-extrabold font-mono-typing text-slate-900 dark:text-white">100%</span>
+                    </div>
+                  </div>
+                  <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5">Accuracy</span>
+                </div>
+
+                <!-- 3. Time -->
+                <div id="circle-card-time" class="stat-circle-card" title="Active Elapsed Typing Time (MM:SS)">
+                  <div class="stat-circle-wrap">
+                    <svg class="stat-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="stat-ring-track" cx="40" cy="40" r="33"></circle>
+                      <circle id="ring-time" class="stat-ring-progress ring-time" cx="40" cy="40" r="33" stroke-dasharray="207.35" stroke-dashoffset="207.35"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="stat-elapsed-time" class="text-xs sm:text-base font-extrabold font-mono-typing text-slate-900 dark:text-white">00:00</span>
+                    </div>
+                  </div>
+                  <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5">Time</span>
+                </div>
+
+                <!-- 4. Words -->
+                <div id="circle-card-words" class="stat-circle-card" title="Correctly Typed Words & Progress Toward Target">
+                  <div class="stat-circle-wrap">
+                    <svg class="stat-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="stat-ring-track" cx="40" cy="40" r="33"></circle>
+                      <circle id="ring-words" class="stat-ring-progress ring-words" cx="40" cy="40" r="33" stroke-dasharray="207.35" stroke-dashoffset="207.35"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="stat-words-summary" class="text-sm sm:text-lg font-extrabold font-mono-typing text-slate-900 dark:text-white">0</span>
+                    </div>
+                  </div>
+                  <span id="stat-words-label" class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5">Words</span>
+                </div>
+
+                <!-- 5. Errors -->
+                <div id="circle-card-errors" class="stat-circle-card" title="Number of Typing Mistakes">
+                  <div class="stat-circle-wrap">
+                    <svg class="stat-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                      <circle class="stat-ring-track" cx="40" cy="40" r="33"></circle>
+                      <circle id="ring-errors" class="stat-ring-progress ring-errors" cx="40" cy="40" r="33" stroke-dasharray="207.35" stroke-dashoffset="207.35"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="stat-errors-summary" class="text-sm sm:text-lg font-extrabold font-mono-typing text-slate-900 dark:text-white">0</span>
+                    </div>
+                  </div>
+                  <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5">Errors</span>
+                </div>
+
+              </div>
+
+              <!-- Screen-reader & auxiliary telemetry bindings (hidden visually to prevent duplicate cards) -->
+              <div class="sr-only" aria-hidden="true">
+                <span id="stat-gross-wpm">0.0</span>
+                <span id="stat-penalty-wpm">0.0</span>
+                <span id="stat-error-rate">Err: 0.0%</span>
+                <span id="stat-final-accuracy">100%</span>
+                <span id="stat-current-wpm">0.0</span>
+                <span id="stat-best-wpm">0.0</span>
+                <span id="stat-avg-wpm">0.0</span>
+                <span id="stat-completion-pct">0%</span>
+                <span id="stat-remaining-time"></span>
+                <div id="stat-progress-bar"></div>
+                <span id="stat-chars-summary">0 / 0 / 0</span>
+                <span id="stat-mechanics-summary">P:100% C:100% S:100%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Unified Single-Box Typing Area & Target Passage Display (Section 4) - Expands with flex-1 to fill 1920x1080 -->
+          <div id="unified-typing-wrapper" class="flex-1 flex flex-col justify-between relative rounded-2xl border-2 border-slate-200 dark:border-slate-800 focus-within:border-blue-600 bg-white dark:bg-slate-900 p-4 sm:p-6 shadow-sm transition">
+
+            <!-- Countdown Overlay -->
+            <div id="countdown-overlay" class="hidden absolute inset-0 z-20 rounded-2xl bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center text-white">
+              <div class="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-1">Get Ready to Type</div>
+              <div id="countdown-number" class="text-6xl font-extrabold font-mono-typing text-emerald-400">3</div>
+            </div>
+
+            <!-- Status Alerts Row (Caps Lock, Pause Banner, Strict Mode Alert) -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span id="session-status-badge" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  Ready — Type directly in the passage or click the highlighted character
+                </span>
+                <span id="caps-lock-warning" class="hidden px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500 text-slate-950">
+                  CAPS LOCK IS ON
+                </span>
+                <span id="strict-mode-alert" class="hidden px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  Strict Mode: Fix highlighted mismatch to finish passage
+                </span>
+              </div>
+
+              <div class="text-xs text-slate-500 dark:text-slate-400">
+                Single-Box Direct Typing • <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono-typing text-[11px]">Alt+R</kbd> Restart • <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono-typing text-[11px]">Alt+N</kbd> Next
+              </div>
+            </div>
+
+            <!-- Merged Single Typing Box: Direct Character-by-Character Passage & Hidden Live Input Capture -->
+            <div class="relative flex-1 flex flex-col">
+              <div id="target-passage-display"
+                tabindex="0"
+                role="region"
+                aria-label="Unified typing passage — type directly or click the current character"
+                class="flex-1 font-mono-typing select-none rounded-2xl min-h-[13rem] sm:min-h-[18rem] lg:min-h-[24rem] xl:min-h-[28rem] cursor-text transition">
+              </div>
+
+              <!-- Optically hidden backing input so all keyboard events, Backspace, IME & paste work directly inside the single passage box -->
+              <label for="typing-input" class="sr-only">Type the passage directly</label>
+              <textarea id="typing-input"
+                rows="1"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                aria-label="Direct passage typing input"
+                class="sr-only"></textarea>
+            </div>
+
+            <!-- Workspace Controls Bar -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+              <div class="flex flex-wrap items-center gap-2">
+                <button id="btn-pause-resume" type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500/50 transition">
+                  Pause (Alt+P)
+                </button>
+                <button id="btn-restart-passage" type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-rose-500/50 transition">
+                  Restart (Alt+R)
+                </button>
+                <button id="btn-prev-passage" type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-sky-500/50 transition">
+                  ← Prev Passage
+                </button>
+                <button id="btn-next-passage" type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-sky-500/50 transition">
+                  Next Passage (Alt+N) →
+                </button>
+                <button id="btn-shuffle-words" type="button"
+                  title="Generate a fresh random stream of normal lowercase words without punctuation"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition">
+                  Shuffle Normal Words
+                </button>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button id="btn-open-inspector-page" type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-sky-500/40 bg-sky-500/15 text-sky-700 dark:text-sky-300 hover:bg-sky-500/25 transition">
+                  Inspector, Counts &amp; Keyboard →
+                </button>
+                <button id="btn-finish-session" type="button"
+                  class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition">
+                  Complete &amp; Review (Ctrl+Enter)
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1B: LIVE DIAGNOSTIC INSPECTOR, COUNTS & QWERTY KEYBOARD PAGE     -->
+    <!-- ===================================================================== -->
+    <section id="view-inspector" class="hidden space-y-5">
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            Live Diagnostic Inspector, Character/Word Counts &amp; QWERTY Keyboard
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Inspect real-time grammar vs. typing feedback, exact character/word breakdowns, and your interactive QWERTY key heatmap.
+          </p>
+        </div>
+        <button id="btn-back-to-trainer" type="button"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-sm transition">
+          ← Back to Typing Workspace
+        </button>
+      </div>
+
+      <!-- Live / Post-Sentence Grammar vs. Mechanical Typing Diagnostic Panel (Section 3) -->
+      <div id="live-diagnostic-panel" class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">
+              Real-Time Grammar vs. Typing Diagnostic Inspector
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Separates conceptual grammar/punctuation understanding from mechanical keystroke slips and recognizes valid English alternatives.
+            </p>
+          </div>
+          <div class="flex items-center gap-3 text-xs font-mono-typing">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              Grammar Knowledge: <strong id="diag-grammar-score">100%</strong>
+            </span>
+            <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+              Typing Mechanics: <strong id="diag-typing-score">100%</strong>
+            </span>
+          </div>
+        </div>
+
+        <div id="diag-accepted-alternatives" class="hidden rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-xs text-emerald-700 dark:text-emerald-300"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Grammar & Punctuation Errors -->
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 p-3">
+            <div class="text-xs font-semibold text-rose-600 dark:text-rose-400 mb-1.5">
+              Grammar, Punctuation &amp; Capitalization Feedback
+            </div>
+            <div id="diag-grammar-mistakes" class="text-xs text-slate-600 dark:text-slate-300 space-y-2">
+              No grammatical or punctuation errors detected in your current input.
+            </div>
+          </div>
+
+          <!-- Mechanical Typing Slips -->
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 p-3">
+            <div class="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-1.5">
+              Mechanical Typing &amp; Keystroke Slips
+            </div>
+            <div id="diag-typing-mistakes" class="text-xs text-slate-600 dark:text-slate-300 space-y-2">
+              No mechanical keystroke slips detected.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Grid: Live Character/Word Count Panel (Section 7) & On-Screen QWERTY Keyboard -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+        <!-- Section 7: Live Character & Word Count Panel (5 cols) -->
+        <div class="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">Exact Character &amp; Word Count</h2>
+              <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-950 text-[11px]">
+                <button id="btn-count-source-final" type="button" class="px-2 py-0.5 rounded-md font-semibold bg-emerald-500 text-slate-950">
+                  Final Input
+                </button>
+                <button id="btn-count-source-raw" type="button" class="px-2 py-0.5 rounded-md font-medium text-slate-600 dark:text-slate-400">
+                  Raw Stream
+                </button>
+                <button id="btn-count-source-ref" type="button" class="px-2 py-0.5 rounded-md font-medium text-slate-600 dark:text-slate-400">
+                  Reference
+                </button>
+              </div>
+            </div>
+            <p id="count-source-caption" class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+              Showing counts for the current final corrected text in the input box. Words are tokenized by contiguous non-whitespace sequences (\S+).
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Chars (with spaces)</div>
+                <div id="cnt-chars-with-spaces" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Chars (no spaces)</div>
+                <div id="cnt-chars-no-spaces" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Words Typed</div>
+                <div id="cnt-words" class="text-base font-bold font-mono-typing text-emerald-600 dark:text-emerald-400">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Letters (A–Z/Unicode)</div>
+                <div id="cnt-letters" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Upper / Lowercase</div>
+                <div id="cnt-upper-lower" class="text-base font-bold font-mono-typing text-sky-600 dark:text-sky-400">0 / 0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Digits (0–9)</div>
+                <div id="cnt-digits" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Punctuation Marks</div>
+                <div id="cnt-punctuation" class="text-base font-bold font-mono-typing text-amber-600 dark:text-amber-400">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Whitespace Chars</div>
+                <div id="cnt-whitespace" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Correct / Incorrect</div>
+                <div id="cnt-correct-incorrect" class="text-base font-bold font-mono-typing text-slate-800 dark:text-slate-100">0 / 0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Ref Chars / Words</div>
+                <div id="cnt-ref-chars-words" class="text-sm font-bold font-mono-typing text-slate-700 dark:text-slate-300">0 / 0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800 col-span-2">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Remaining Chars / Remaining Words</div>
+                <div id="cnt-rem-chars-words" class="text-sm font-bold font-mono-typing text-slate-700 dark:text-slate-300">0 chars / 0 words</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive On-Screen QWERTY Keyboard & Heatmap (7 cols) -->
+        <div class="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">Interactive QWERTY Keyboard &amp; Heatmap</h2>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                Visualizes real-time keystrokes (Shift, Caps Lock, Backspace, symbols) or measured keypress frequency heatmap.
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="btn-kb-mode-live" type="button"
+                class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950">
+                Live Keys
+              </button>
+              <button id="btn-kb-mode-heatmap" type="button"
+                class="px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                Key Heatmap
+              </button>
+              <button id="btn-toggle-keyboard" type="button"
+                class="px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400">
+                Hide
+              </button>
+            </div>
+          </div>
+
+          <div id="qwerty-keyboard-container" class="space-y-1.5 overflow-x-auto py-1 flex flex-col items-center">
+            <!-- Rendered from Engine.QWERTY_ROWS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: LETTER-FREQUENCY & VISUAL ANALYTICS (SECTIONS 8 & 9)          -->
+    <!-- ===================================================================== -->
+    <section id="view-analytics" class="hidden space-y-6">
+
+      <!-- Section 8: Letter-Frequency Analytics Dashboard -->
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              A–Z Letter-Frequency Analytics Dashboard
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Counts A–Z individually. Spaces, digits, and punctuation are strictly excluded from A–Z letter percentages.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex rounded-xl border border-slate-200 dark:border-slate-800 p-1 bg-slate-100 dark:bg-slate-950 text-xs">
+              <button id="btn-freq-filter-session" type="button" class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-500 text-slate-950">
+                Current Session Keystrokes
+              </button>
+              <button id="btn-freq-filter-ref" type="button" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400">
+                Reference Passage
+              </button>
+              <button id="btn-freq-filter-custom" type="button" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400">
+                Custom Text
+              </button>
+              <button id="btn-freq-filter-alltime" type="button" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400">
+                All-Time History
+              </button>
+            </div>
+
+            <button id="btn-freq-case-toggle" type="button"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+              View: Case-Insensitive (A–Z)
+            </button>
+          </div>
+        </div>
+
+        <!-- Letter-Frequency Summary Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+            <div class="text-xs text-slate-500 dark:text-slate-400">Total Alphabetic Letters (A–Z)</div>
+            <div id="freq-total-letters" class="text-xl font-bold font-mono-typing text-slate-900 dark:text-white mt-0.5">0</div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+            <div class="text-xs text-emerald-700 dark:text-emerald-300">Most-Used Letter</div>
+            <div id="freq-most-used" class="text-xl font-bold font-mono-typing text-emerald-600 dark:text-emerald-400 mt-0.5">—</div>
+          </div>
+          <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+            <div class="text-xs text-amber-700 dark:text-amber-300">Least-Used Typed Letter</div>
+            <div id="freq-least-used" class="text-xl font-bold font-mono-typing text-amber-600 dark:text-amber-400 mt-0.5">—</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+            <div class="text-xs text-slate-500 dark:text-slate-400">Excluded Non-Letters</div>
+            <div id="freq-excluded-nonletters" class="text-xs font-mono-typing text-slate-700 dark:text-slate-300 mt-1">
+              0 spaces, 0 digits, 0 punct
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranked A-Z Grid -->
+        <div id="letter-freq-ranked-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
+          <!-- Populated dynamically with A-Z cards -->
+        </div>
+      </div>
+
+      <!-- Section 9: 8 Real Interactive Charts (A through H) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Chart A: WPM Over Time -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">A. WPM Over Time (2s Active Intervals)</h3>
+            <span class="text-[11px] text-slate-500">Net vs. Gross WPM</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-wpm-time"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart B: Accuracy Over Time -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">B. Accuracy Over Time (Session Intervals)</h3>
+            <span class="text-[11px] text-slate-500">Keystroke Accuracy %</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-acc-time"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart C: Character Performance -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">C. Character Performance Breakdown</h3>
+            <span class="text-[11px] text-slate-500">Correct vs. Corrected vs. Uncorrected</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-char-perf"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart D: Letter Frequency Bar Chart -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">D. Alphabet Frequency Distribution (A–Z)</h3>
+            <span class="text-[11px] text-slate-500">Filtered Source</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-letter-freq"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart E: Error Categories -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">E. Error Categories Breakdown</h3>
+            <span class="text-[11px] text-slate-500">Punctuation, Case, Spelling, Spacing, Grammar</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-error-cats"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart F: Daily Practice -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">F. Daily Practice Volume</h3>
+            <span class="text-[11px] text-slate-500">Total Words &amp; Active Minutes per Day</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-daily-practice"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart G: Progress Over Time -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">G. Progress Over Time (Session History)</h3>
+            <span class="text-[11px] text-slate-500">Session Net WPM &amp; Accuracy %</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-progress-time"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart H: Grammar Weakness Chart -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">H. Grammar Weakness Frequency</h3>
+            <span class="text-[11px] text-slate-500">Detected Rule Categories</span>
+          </div>
+          <div class="relative h-64">
+            <canvas id="chart-grammar-weakness"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: CUSTOM PRACTICE STUDIO (SECTION 11)                           -->
+    <!-- ===================================================================== -->
+    <section id="view-custom" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+        <!-- Left Column: Saved Custom Practice Sets (5 cols) -->
+        <div class="lg:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 dark:text-white">Saved Custom Practice Sets</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Stored locally in your browser across refreshes.</p>
+            </div>
+            <button id="btn-new-custom-set" type="button"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition">
+              + New Set
+            </button>
+          </div>
+
+          <!-- Import / Export Bar -->
+          <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+            <button id="btn-open-import-modal" type="button"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 transition">
+              Import JSON / Text
+            </button>
+            <button id="btn-export-all-json" type="button"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-sky-500/50 transition">
+              Export All (JSON)
+            </button>
+            <button id="btn-export-active-txt" type="button"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-sky-500/50 transition">
+              Export Current (.TXT)
+            </button>
+          </div>
+
+          <!-- Saved Sets List -->
+          <div id="custom-sets-list" class="space-y-2.5 max-h-[32rem] overflow-y-auto pr-1">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Right Column: Custom Practice Set Editor (7 cols) -->
+        <div class="lg:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 id="custom-editor-title" class="text-base font-bold text-slate-900 dark:text-white">
+              Edit Custom Practice Set
+            </h2>
+            <span id="custom-editor-id-badge" class="text-[11px] font-mono-typing text-slate-400"></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="input-custom-name" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Practice Set Name *
+              </label>
+              <input id="input-custom-name" type="text" placeholder="e.g., Prepositions & Currency Drill"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100" />
+            </div>
+
+            <div>
+              <label for="input-custom-grammar-focus" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Grammar &amp; Mechanics Focus
+              </label>
+              <input id="input-custom-grammar-focus" type="text" placeholder="e.g., Prepositions (in/on/at) & Commas"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100" />
+            </div>
+
+            <div>
+              <label for="select-custom-difficulty" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Difficulty Level
+              </label>
+              <select id="select-custom-difficulty"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="select-custom-match" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Matching Mode
+              </label>
+              <select id="select-custom-match"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                <option value="relaxed">Relaxed (Allow corrections before completion)</option>
+                <option value="strict">Strict (Require exact character match)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="select-custom-limit-type" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Default Session Mode
+              </label>
+              <select id="select-custom-limit-type"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100">
+                <option value="unlimited">Unlimited</option>
+                <option value="timed">Timed (Seconds)</option>
+                <option value="words">Word Target</option>
+                <option value="chars">Character Target</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="input-custom-limit-val" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Limit Value (Sec / Words / Chars, 0 for Unlimited)
+              </label>
+              <input id="input-custom-limit-val" type="number" min="0" max="10000" value="0"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100" />
+            </div>
+
+            <div>
+              <label for="input-custom-target-wpm" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Target WPM Goal
+              </label>
+              <input id="input-custom-target-wpm" type="number" min="10" max="250" value="45"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100" />
+            </div>
+
+            <div>
+              <label for="input-custom-target-acc" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Target Accuracy Goal (%)
+              </label>
+              <input id="input-custom-target-acc" type="number" min="50" max="100" value="96"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100" />
+            </div>
+          </div>
+
+          <!-- Quick Insert Sample Snippets -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-500 dark:text-slate-400">Quick append drill line:</span>
+            <button id="btn-insert-prep-sample" type="button"
+              class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20">
+              + Preposition Sentence
+            </button>
+            <button id="btn-insert-num-sample" type="button"
+              class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20">
+              + Dates &amp; Tk Currency
+            </button>
+            <button id="btn-insert-punct-sample" type="button"
+              class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20">
+              + Dialogue &amp; Semicolon
+            </button>
+          </div>
+
+          <div>
+            <label for="textarea-custom-items" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+              Practice Passages (Enter one sentence, paragraph, or drill per line) *
+            </label>
+            <textarea id="textarea-custom-items" rows="6"
+              placeholder="Paste or write your custom sentences, paragraphs, numbers, or punctuation drills here (one item per line)..."
+              class="w-full font-mono-typing rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 text-xs sm:text-sm text-slate-900 dark:text-slate-100"></textarea>
+          </div>
+
+          <div id="custom-validation-msg" class="hidden rounded-xl px-3 py-2 text-xs font-medium"></div>
+
+          <div class="flex flex-wrap items-center justify-end gap-2.5 pt-2">
+            <button id="btn-save-custom-set" type="button"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 transition">
+              Save Practice Set
+            </button>
+            <button id="btn-save-and-practice-custom" type="button"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-sm transition">
+              Save &amp; Practice This Set Now
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 5: SESSION HISTORY & USER PROGRESS (SECTION 13)                  -->
+    <!-- ===================================================================== -->
+    <section id="view-history" class="hidden space-y-6">
+
+      <!-- Local Storage Transparency Notice -->
+      <div class="rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-sky-800 dark:text-sky-200">
+        <div>
+          <strong>Local Browser Storage Policy:</strong> Your session history, custom practice sets, and grammar telemetry are saved locally in this browser (<code class="font-mono-typing">localStorage</code>). Data is device/browser-specific, is not synchronized to any cloud server, and may be cleared if you clear browser site data.
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-seed-demo-history" type="button"
+            class="px-2.5 py-1 rounded-lg font-semibold bg-sky-500/20 hover:bg-sky-500/30 text-sky-900 dark:text-sky-100 border border-sky-500/40 transition">
+            + Add Sample Multi-Day History
+          </button>
+          <button id="btn-open-reset-modal" type="button"
+            class="px-2.5 py-1 rounded-lg font-semibold bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 dark:text-rose-300 border border-rose-500/40 transition">
+            Reset All Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Daily, Weekly, Monthly & Personal Bests Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Daily Summary (Today)</div>
+          <div id="hist-daily-summary" class="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-300"></div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">Weekly Summary (Last 7 Days)</div>
+          <div id="hist-weekly-summary" class="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-300"></div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-400">Monthly Summary (Last 30 Days)</div>
+          <div id="hist-monthly-summary" class="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-300"></div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Personal Bests &amp; Trend</div>
+          <div id="hist-personal-bests" class="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-300"></div>
+        </div>
+      </div>
+
+      <!-- Filterable Session History Table -->
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">Completed Session Log</h2>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <input id="filter-history-date" type="date" aria-label="Filter by date"
+              class="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100" />
+
+            <select id="filter-history-mode" aria-label="Filter by practice mode"
+              class="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100">
+              <option value="all">All Practice Modes</option>
+            </select>
+
+            <select id="filter-history-custom-set" aria-label="Filter by custom practice set"
+              class="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100">
+              <option value="all">All Sets</option>
+            </select>
+
+            <button id="btn-clear-history-filters" type="button"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+              Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                <th class="py-2.5 px-3 font-semibold">Date &amp; Time</th>
+                <th class="py-2.5 px-3 font-semibold">Mode / Set</th>
+                <th class="py-2.5 px-3 font-semibold">Grammar Focus</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Duration</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Net / Gross WPM</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Typing Acc</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Grammar Acc</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Words / Chars</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body" class="divide-y divide-slate-200/60 dark:divide-slate-800/70">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 1: SESSION RESULTS & DIAGNOSTIC REPORT (SECTION 12)               -->
+  <!-- ======================================================================= -->
+  <div id="modal-session-results" role="dialog" aria-modal="true" aria-labelledby="results-modal-title"
+    class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-3xl w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-500">Session Complete</span>
+          <h2 id="results-modal-title" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+            Performance &amp; Grammar Diagnostic Report
+          </h2>
+          <p id="res-subtitle" class="text-xs text-slate-500 dark:text-slate-400"></p>
+        </div>
+        <button id="btn-close-results-modal" type="button"
+          class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+          Close (Esc)
+        </button>
+      </div>
+
+      <!-- Primary Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+          <div class="text-xs text-emerald-700 dark:text-emerald-300">Net / Gross WPM</div>
+          <div id="res-wpm" class="text-xl font-bold font-mono-typing text-emerald-600 dark:text-emerald-400 mt-0.5">0.0 / 0.0</div>
+          <div id="res-prev-comparison" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">First session</div>
+        </div>
+        <div class="p-3 rounded-xl bg-sky-500/10 border border-sky-500/30">
+          <div class="text-xs text-sky-700 dark:text-sky-300">Typing Accuracy / Err</div>
+          <div id="res-accuracy" class="text-xl font-bold font-mono-typing text-sky-600 dark:text-sky-400 mt-0.5">100% / 0%</div>
+          <div id="res-grammar-acc" class="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">Grammar Acc: 100%</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <div class="text-xs text-slate-500 dark:text-slate-400">Words &amp; Characters</div>
+          <div id="res-words-chars" class="text-base font-bold font-mono-typing text-slate-900 dark:text-white mt-0.5">0 W / 0 C</div>
+          <div id="res-correct-breakdown" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">0 ok / 0 err</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <div class="text-xs text-slate-500 dark:text-slate-400">Time &amp; Completion</div>
+          <div id="res-time-completion" class="text-base font-bold font-mono-typing text-slate-900 dark:text-white mt-0.5">0.0s (100%)</div>
+          <div id="res-top-letters" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Top Letters: —</div>
+        </div>
+      </div>
+
+      <!-- Mechanics Breakdown -->
+      <div id="res-mechanics-strip" class="rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 p-3 text-xs flex flex-wrap items-center justify-between gap-2">
+      </div>
+
+      <!-- Mistake Review & Explanations -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Sentence &amp; Position Review (Grammar Rules vs. Typing Slips)
+        </h3>
+        <div id="res-mistakes-review" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs">
+        </div>
+      </div>
+
+      <!-- Concise Next Session Recommendation -->
+      <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="space-y-0.5">
+          <div class="text-xs font-bold text-emerald-700 dark:text-emerald-300">Recommended Next Practice Session:</div>
+          <p id="res-recommendation-text" class="text-xs text-slate-700 dark:text-slate-200"></p>
+        </div>
+        <button id="btn-res-practice-recommended" type="button"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition">
+          Launch Recommended Drill
+        </button>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <button id="btn-res-retry-passage" type="button"
+          class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          Retry Same Passage
+        </button>
+        <button id="btn-res-next-passage" type="button"
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 hover:bg-sky-400 text-slate-950">
+          Next Passage →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 2: IMPORT / EXPORT CUSTOM PRACTICE SETS                           -->
+  <!-- ======================================================================= -->
+  <div id="modal-import-export" role="dialog" aria-modal="true" aria-labelledby="io-modal-title"
+    class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-xl w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 id="io-modal-title" class="text-base font-bold text-slate-900 dark:text-white">Import / Export Practice Sets</h2>
+        <button id="btn-close-io-modal" type="button" class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Close</button>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs">
+        <label for="select-import-format" class="font-medium text-slate-600 dark:text-slate-300">Format:</label>
+        <select id="select-import-format"
+          class="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 text-slate-800 dark:text-slate-100">
+          <option value="json">JSON (Structured Practice Sets)</option>
+          <option value="text">Plain Text (One passage per line)</option>
+        </select>
+      </div>
+
+      <textarea id="textarea-modal-io" rows="8"
+        placeholder="Paste JSON or plain-text lines here to import, or copy exported content below..."
+        class="w-full font-mono-typing text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100"></textarea>
+
+      <div id="io-modal-feedback" class="hidden rounded-xl px-3 py-2 text-xs font-medium"></div>
+
+      <div class="flex items-center justify-end gap-2">
+        <button id="btn-copy-export" type="button"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+          Copy to Clipboard
+        </button>
+        <button id="btn-confirm-import" type="button"
+          class="px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950">
+          Validate &amp; Import
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 3: RESET DATA CONFIRMATION                                        -->
+  <!-- ======================================================================= -->
+  <div id="modal-reset-confirm" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title"
+    class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-md w-full rounded-2xl border border-rose-500/40 bg-white dark:bg-slate-900 p-5 shadow-2xl space-y-4">
+      <h2 id="reset-modal-title" class="text-base font-bold text-rose-600 dark:text-rose-400">Reset All Local Data?</h2>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        This will clear your saved session history, letter-frequency telemetry, recurring mistake tracker, and restore default custom practice sets in local browser storage.
+      </p>
+      <div class="flex items-center justify-end gap-2">
+        <button id="btn-cancel-reset-modal" type="button"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+          Cancel
+        </button>
+        <button id="btn-confirm-reset-data" type="button"
+          class="px-4 py-1.5 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-400 text-white">
+          Yes, Reset Everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL 4: KEYBOARD SHORTCUTS HELP                                        -->
+  <!-- ======================================================================= -->
+  <div id="modal-shortcuts" role="dialog" aria-modal="true" aria-labelledby="shortcuts-modal-title"
+    class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-md w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 id="shortcuts-modal-title" class="text-base font-bold text-slate-900 dark:text-white">Keyboard Shortcuts</h2>
+        <button id="btn-close-shortcuts-modal" type="button" class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Close</button>
+      </div>
+      <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+        <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+          <span>Restart Current Passage</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Alt + R</kbd>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+          <span>Pause / Resume Session Timer</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Alt + P</kbd>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+          <span>Next Practice Passage</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Alt + N</kbd>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+          <span>Complete &amp; Review Session</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Ctrl + Enter</kbd>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+          <span>Toggle "Why is this correct?" Explanation</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Alt + W</kbd>
+        </div>
+        <div class="flex justify-between py-1">
+          <span>Close Open Modal</span>
+          <kbd class="font-mono-typing px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">Escape</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  
+</body>
+</html>
